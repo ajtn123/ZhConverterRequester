@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ZhConverterRequester": {
+      "commandName": "Project",
+      "commandLineArgs": "info --ShowDetail"
+    }
+  }
+}
