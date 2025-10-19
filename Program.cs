@@ -51,7 +51,7 @@ rootCommand.SetAction(async r =>
         Console.WriteLine("繁化姬返回数据为空。");
         return 2;
     }
-    if (r.GetValue<bool?>("--ShowDetail") ?? false)
+    if (r.GetValue<bool?>("--ShowDetail") ?? response.Code != 0)
         LogResponse(response);
 
     ConvertData data = JsonSerializer.Deserialize<ConvertData>(response.Data, OptionProvider.JsonSerializerOptions);
@@ -88,7 +88,7 @@ serviceInfoCommand.SetAction(async r =>
         Console.WriteLine("繁化姬返回数据为空。");
         return 2;
     }
-    if (r.GetValue<bool?>("--ShowDetail") ?? false)
+    if (r.GetValue<bool?>("--ShowDetail") ?? response.Code != 0)
         LogResponse(response);
 
     var output = ((JsonElement?)response.Data)?.ToString();
