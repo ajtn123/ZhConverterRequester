@@ -19,14 +19,13 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10'
+          dotnet-version: '8'
 
       - name: Publish
         run: |
-          cd BangumiNet
-          dotnet publish -c Release -r win-x64 -p:Version=${GITHUB_REF_NAME#v} -o ../publish-win-x64
-          dotnet publish -c Release -r linux-x64 -p:Version=${GITHUB_REF_NAME#v} -o ../publish-linux-x64
-          dotnet publish -c Release -r osx-x64 -p:Version=${GITHUB_REF_NAME#v} -o ../publish-osx-x64
+          dotnet publish -c Release -r win-x64 -p:Version=${GITHUB_REF_NAME#v} -o publish-win-x64
+          dotnet publish -c Release -r linux-x64 -p:Version=${GITHUB_REF_NAME#v} -o publish-linux-x64
+          dotnet publish -c Release -r osx-x64 -p:Version=${GITHUB_REF_NAME#v} -o publish-osx-x64
 
       - name: Create archive
         run: |
