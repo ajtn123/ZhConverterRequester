@@ -2,7 +2,7 @@
   "profiles": {
     "ZhConverterRequester": {
       "commandName": "Project",
-      "commandLineArgs": "--ShowDetail -t 内存不足！没法在视频聊天时播放视频。 -c Taiwan"
+      "commandLineArgs": "--detail -t 内存不足！没法在视频聊天时播放视频。 -c Taiwan -o a.txt --diff"
     }
   }
 }

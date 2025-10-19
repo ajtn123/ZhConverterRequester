@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ZhConverterRequester;
 
@@ -8,6 +9,7 @@ public static class OptionProvider
     public static JsonSerializerOptions JsonSerializerOptions { get; } = new()
     {
         PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
     public static Option[] Options => [
@@ -16,7 +18,7 @@ public static class OptionProvider
         new Option<FileInfo?>("--OutputFile", "-o") { Description = Descriptions.OutputFile },
         new Option<bool?>("--OutputConsole", "--console") { Description = Descriptions.OutputConsole },
         new Option<bool?>("--OutputRaw", "--raw") { Description = Descriptions.OutputRaw },
-        new Option<bool?>("--ShowDetail") { Description = Descriptions.ShowDetail },
+        new Option<bool?>("--ShowDetail", "--detail") { Description = Descriptions.ShowDetail },
 
         new Option<string>("--Text", "-t") { Description = Descriptions.Text },
         new Option<string>("--Converter", "-c") { Description = Descriptions.Converter, Required = true },

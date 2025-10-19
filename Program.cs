@@ -43,7 +43,7 @@ rootCommand.SetAction(async r =>
         Log("Input", text);
 
     HttpClient client = new();
-    var response = await client.PostAsJsonAsync(OptionProvider.ConvertUri, new Con() { text = text, converter = r.GetValue<string>("--Converter")! });
+    var response = await client.PostAsJsonAsync(OptionProvider.ConvertUri, new Con(r) { text = text }, OptionProvider.JsonSerializerOptions);
     var responseObj = JsonSerializer.Deserialize<Response>(response.Content.ReadAsStream(), OptionProvider.JsonSerializerOptions);
     if (responseObj == null)
     {
@@ -65,12 +65,16 @@ rootCommand.SetAction(async r =>
     var output = (r.GetValue<bool?>("--OutputRaw") ?? false) ? await response.Content.ReadAsStringAsync() : data.Text;
 
     if (r.GetValue<bool?>("--OutputConsole") ?? (r.GetValue<FileInfo?>("--OutputFile") == null || output == null || output.Length < 100))
-    {
         Log("Output", output);
-    }
+
     if (r.GetValue<FileInfo?>("--OutputFile") is FileInfo outputFile)
-    {
         WriteFile(outputFile, output);
+
+    if (data.Diff is string diff)
+    {
+        Log("Diff", diff);
+        if (r.GetValue<FileInfo?>("--OutputFile")?.FullName is string oFFN)
+            WriteFile(new(oFFN + ".diff.html"), diff);
     }
 
     return 0;
@@ -126,7 +130,6 @@ static void LogResponse(Response response)
     Log("  Message", response.Revisions?.Msg);
     Log("  Time", response.Revisions?.DateTime.ToString());
 }
-
 static void WriteFile(FileInfo file, string? content)
 {
     Log("OutputFile", file.FullName);
