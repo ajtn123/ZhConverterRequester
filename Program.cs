@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.Net.Http.Json;
 using System.Text.Json;
 using ZhConverterRequester;
 
@@ -42,19 +43,17 @@ rootCommand.SetAction(async r =>
         Log("Input", text);
 
     HttpClient client = new();
-    var uri = new Uri($"https://api.zhconvert.org/convert?converter={r.GetValue<string>("--Converter")}&text={text}");
-
-    var responseString = await client.GetStringAsync(uri);
-    var response = JsonSerializer.Deserialize<Response>(responseString, OptionProvider.JsonSerializerOptions);
-    if (response == null)
+    var response = await client.PostAsJsonAsync(OptionProvider.ConvertUri, new Con() { text = text, converter = r.GetValue<string>("--Converter")! });
+    var responseObj = JsonSerializer.Deserialize<Response>(response.Content.ReadAsStream(), OptionProvider.JsonSerializerOptions);
+    if (responseObj == null)
     {
         Console.WriteLine("繁化姬返回数据为空。");
         return 2;
     }
-    if (r.GetValue<bool?>("--ShowDetail") ?? response.Code != 0)
-        LogResponse(response);
+    if (r.GetValue<bool?>("--ShowDetail") ?? responseObj.Code != 0)
+        LogResponse(responseObj);
 
-    ConvertData data = JsonSerializer.Deserialize<ConvertData>(response.Data, OptionProvider.JsonSerializerOptions);
+    ConvertData data = JsonSerializer.Deserialize<ConvertData>(responseObj.Data, OptionProvider.JsonSerializerOptions);
     if (r.GetValue<bool?>("--ShowDetail") ?? false)
     {
         Log("Converter", data.Converter);
@@ -63,7 +62,7 @@ rootCommand.SetAction(async r =>
         Log("TextFormat", data.TextFormat);
     }
 
-    var output = (r.GetValue<bool?>("--OutputRaw") ?? false) ? responseString : data.Text;
+    var output = (r.GetValue<bool?>("--OutputRaw") ?? false) ? await response.Content.ReadAsStringAsync() : data.Text;
 
     if (r.GetValue<bool?>("--OutputConsole") ?? (r.GetValue<FileInfo?>("--OutputFile") == null || output == null || output.Length < 100))
     {
@@ -80,18 +79,17 @@ rootCommand.SetAction(async r =>
 serviceInfoCommand.SetAction(async r =>
 {
     HttpClient client = new();
-    var uri = new Uri($"https://api.zhconvert.org/service-info?prettify=1");
-    var responseString = await client.GetStringAsync(uri);
-    var response = JsonSerializer.Deserialize<Response>(responseString, OptionProvider.JsonSerializerOptions);
-    if (response == null)
+    var response = await client.GetStringAsync(OptionProvider.InfoUri);
+    var responseObj = JsonSerializer.Deserialize<Response>(response, OptionProvider.JsonSerializerOptions);
+    if (responseObj == null)
     {
         Console.WriteLine("繁化姬返回数据为空。");
         return 2;
     }
-    if (r.GetValue<bool?>("--ShowDetail") ?? response.Code != 0)
-        LogResponse(response);
+    if (r.GetValue<bool?>("--ShowDetail") ?? responseObj.Code != 0)
+        LogResponse(responseObj);
 
-    var output = ((JsonElement?)response.Data)?.ToString();
+    var output = ((JsonElement?)responseObj.Data)?.ToString();
 
     if (r.GetValue<bool?>("--OutputConsole") ?? (r.GetValue<FileInfo?>("--OutputFile") == null || output == null || output.Length < 100))
     {

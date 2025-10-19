@@ -46,4 +46,7 @@ public static class OptionProvider
         new Option<bool?>("--OutputConsole", "--console") { Description = Descriptions.OutputConsole },
         new Option<bool?>("--ShowDetail") { Description = Descriptions.ShowDetail },
     ];
+
+    public static Uri ConvertUri => new($"https://api.zhconvert.org/convert");
+    public static Uri InfoUri => new($"https://api.zhconvert.org/service-info?prettify=1");
 }
