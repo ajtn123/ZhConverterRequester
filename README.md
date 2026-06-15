@@ -22,5 +22,5 @@
 
 转换文件夹内所有 `.ass` 字幕至简体、使用文本清理、并写入结果至文件
 ```pwsh
-Get-ChildItem -Path D:\S1 -Filter *.ass | foreach { .\ZhConvertRequester.exe -c Simplified -i $_ -o "$_.sc.ass" --clean }
+Get-ChildItem -Path D:\S1 -File -Filter *.ass | foreach { .\ZhConvertRequester.exe -c Simplified -i $_ -o "$_.sc.ass" --clean }
 ```
